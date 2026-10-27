@@ -37,3 +37,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+###Sql database files###
+reservation.db
+*.db
+*.sqlite
+*.sqlite3
