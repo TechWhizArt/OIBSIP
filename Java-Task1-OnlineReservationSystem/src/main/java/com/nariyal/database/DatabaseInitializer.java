@@ -1,10 +1,7 @@
 
 package com.nariyal.database;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
+import java.sql.*;
 
 public class DatabaseInitializer {
 
@@ -64,28 +61,40 @@ public class DatabaseInitializer {
     }
 
 
+
     public static void insertSampleTrains() throws SQLException {
+        String checkSql = "SELECT COUNT(*) FROM trains";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement checkStatement = connection.createStatement();
+             ResultSet resultSet = checkStatement.executeQuery(checkSql)) {
+
+            if (resultSet.next() && resultSet.getInt(1) > 0) {
+                return; // Sample trains have already been added
+            }
+        }
+
         String sql = """
             INSERT OR IGNORE INTO trains
             (train_number, train_name, source, destination, start_time, end_time)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
 
+        Object[][] trains = {
+                {12001, "Meerut Mumbai Superfast Express", "Meerut", "Mumbai", "06:00", "14:00"},
+                {12002, "Mumbai Meerut Superfast Express", "Mumbai", "Meerut", "16:30", "08:00"},
+                {12003, "Meerut Haridwar Intercity Express", "Meerut", "Haridwar", "07:00", "12:00"},
+                {12004, "Haridwar Meerut Intercity Express", "Haridwar", "Meerut", "08:00", "14:00"},
+                {12005, "Meerut Ghaziabad Passenger Express", "Meerut", "Ghaziabad", "20:00", "22:00"},
+                {12006, "Ghaziabad Meerut Passenger Express", "Ghaziabad", "Meerut", "20:00", "22:00"},
+                {12007, "Meerut Bengaluru Express", "Meerut", "Bengaluru", "18:00", "10:00"},
+                {12008, "Bengaluru Meerut Express", "Bengaluru", "Meerut", "18:00", "10:00"},
+                {12009, "Meerut Delhi Intercity Express", "Meerut", "Delhi", "09:00", "12:00"},
+                {12010, "Delhi Meerut Intercity Express", "Delhi", "Meerut", "17:00", "20:00"}
+        };
+
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            Object[][] trains = {
-                    {12001, "Meerut Mumbai Superfast Express", "Meerut", "Mumbai", "06:00", "14:00"},
-                    {12002, "Mumbai Meerut Superfast Express", "Mumbai", "Meerut", "16:30", "08:00"},
-                    {12003, "Meerut Haridwar Intercity Express", "Meerut", "Haridwar", "07:00", "12:00"},
-                    {12004, "Haridwar Meerut Intercity Express", "Haridwar", "Meerut", "08:00", "14:00"},
-                    {12005, "Meerut Ghaziabad Passenger Express", "Meerut", "Ghaziabad", "20:00", "22:00"},
-                    {12006, "Ghaziabad Meerut Passenger Express", "Ghaziabad", "Meerut", "20:00", "22:00"},
-                    {12007, "Meerut Bengaluru Express", "Meerut", "Bengaluru", "18:00", "10:00"},
-                    {12008, "Bengaluru Meerut Express", "Bengaluru", "Meerut", "18:00", "10:00"},
-                    {12009, "Meerut Delhi Intercity Express", "Meerut", "Delhi", "09:00", "12:00"},
-                    {12010, "Delhi Meerut Intercity Express", "Delhi", "Meerut", "17:00", "20:00"}
-            };
 
             for (Object[] train : trains) {
                 statement.setInt(1, (Integer) train[0]);
@@ -98,6 +107,7 @@ public class DatabaseInitializer {
             }
         }
     }
+
 
 
     public static void verifyColumns() throws SQLException {

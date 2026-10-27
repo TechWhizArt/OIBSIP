@@ -3,6 +3,7 @@ package com.nariyal;
 import com.nariyal.database.DatabaseInitializer;
 import com.nariyal.ui.LoginFrame;
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 public class Main {
@@ -12,7 +13,8 @@ public class Main {
         try {
             DatabaseInitializer.initialize();
             DatabaseInitializer.verifyColumns();
-
+            //inserts sample trains
+            DatabaseInitializer.insertSampleTrains();
             System.out.println("Database and tables initialized successfully!");
             SwingUtilities.invokeLater(() -> new LoginFrame());
 
